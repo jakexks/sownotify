@@ -1,0 +1,4 @@
+feed-url = ""
+pushover-app-token = ""
+pushover-recipient = ""
+poll-interval = 120
