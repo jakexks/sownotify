@@ -25,8 +25,8 @@ func Run() error {
 	logLock := &sync.Mutex{}
 	done := &sync.WaitGroup{}
 	quit := make(chan struct{})
-	pushChan := make(chan *pushover.Message)
-	rssChan := make(chan *rssItem)
+	pushChan := make(chan *pushover.Message, 10)
+	rssChan := make(chan *rssItem, 50)
 
 	done.Add(3)
 	go pusher(done, logLock, pushChan, quit)
