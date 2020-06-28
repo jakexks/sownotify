@@ -102,9 +102,12 @@ func rssReader(wg *sync.WaitGroup, logLock *sync.Mutex, items chan<- *rssItem, d
 		logLock.Unlock()
 		req, err := http.NewRequest(http.MethodGet, viper.GetString("feed-url"), bytes.NewReader([]byte{}))
 		if err != nil {
+			logLock.Lock()
 			log.Err(err).Fields(logfields).Msg("failed to make request")
+			logLock.Unlock()
 			return
 		}
+		req.Header.Set("User-Agent", "Sownotify/0.1")
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			logLock.Lock()
@@ -162,7 +165,7 @@ func dbmanager(wg *sync.WaitGroup, logLock *sync.Mutex, items <-chan *rssItem, p
 		}
 		if _, found := db[item.item.GUID]; !found {
 			logLock.Lock()
-			log.Info().Str("title", item.item.Title).Msg("New item found")
+			log.Info().Fields(logfields).Str("title", item.item.Title).Msg("New item found")
 			logLock.Unlock()
 			db[item.item.GUID] = item.item
 			go func(item *gofeed.Item) {
